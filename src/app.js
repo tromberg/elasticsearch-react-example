@@ -24,10 +24,33 @@ const App = React.createClass({
 			console.trace( error.message );
 		});
 	},
+	handleCreateIndex ( event ) {
+		client.indices.create({
+			index: "fposts"
+		}).then(function (body) {
+			window.alert("index created");
+			client.index({
+				index: 'fposts',
+				type: 'post',
+				body: {
+					title: 'Test1',
+					content: 'Once upon a time..',
+					tags: ['y', 'z']
+				}
+			}).then(function (body) {
+				window.alert("doc inserted");
+			}.bind(this), function (error) {
+				console.trace (error.message);
+			});
+		}.bind(this), function ( error ) {
+			console.trace( error.message );
+		});
+	},
 	render () {
 		return (
 			<div className="container">
 				<input type="text" onChange={ this.handleChange } />
+				<input type="button" value="create index" onClick={ this.handleCreateIndex } />
 				<SearchResults results={ this.state.results } />
 			</div>
 		)
@@ -47,7 +70,7 @@ const SearchResults = React.createClass({
 				<hr />
 				<ul>
 				{ this.props.results.map((result) => {
-					return <li key={ result._id }>{ result._source.name }</li> }) }
+					return <li key={ result._id }>{ result._source.title }</li> }) }
 				</ul>
 			</div>
 		)
